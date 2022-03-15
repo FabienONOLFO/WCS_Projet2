@@ -1,29 +1,28 @@
 # IMPORT DES MODULES
+from IPython.display import display
+
 import pandas as pd
+import numpy as np
+
 from datetime import datetime
-from google.colab import  drive
+
 import matplotlib.pyplot as plt
 import seaborn as sns
-drive.mount('/drive')
-import numpy as np
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
-from IPython.display import display
+
 import unicodedata
 
+
 #IMPORTS DES DB
-DF_REF_TRAITE = pd.read_csv("/drive/My Drive/WCS/Quêtes/PROJETS/WCS PROJET 2 BACKUP/DB_REF_TRAITE.csv", header=0,na_values='\\N')
-DF_final_CG = pd.read_csv("/drive/My Drive/WCS/Quêtes/PROJETS/WCS PROJET 2 BACKUP/DB_final_CG.csv", header=0,na_values='\\N')
+link_df_ref_traite = "https://raw.githubusercontent.com/FabienONOLFO/WCS_Projet2/main/DB_REF_TRAITE.csv"
+link_df_ref = "https://raw.githubusercontent.com/FabienONOLFO/WCS_Projet2/main/DF_REF.csv"
 
-#TRAITEMENT DES DATABASES
-cols_to_use = DF_final_CG.columns.difference(DF_REF_TRAITE.columns) #Selectionne les colonnes qui sont pas présentes dans la data frame de référence.
-DF_final = DF_REF_TRAITE.merge(DF_final_CG[cols_to_use], left_index=True, right_index=True, how='left') # Merge uniquement les colonnes présentes dans cols_to_use
-DF_REF = DF_REF_TRAITE.drop(['titleId','primaryTitle','originalTitle','directors','writers','startYear_code','genres'],axis=1) 
-DF_REF = DF_REF.drop(['numVotes'],axis=1) 
-
+DF_REF = pd.read_csv(link_df_ref)
+DF_REF_TRAITE = pd.read_csv(link_df_ref_traite)
 
 X = DF_REF.loc[:, DF_REF.columns!='title']
 
@@ -86,4 +85,3 @@ def main():
             neighbors = distanceKNN.kneighbors(DF_X_scaled.loc[DF_X_scaled.index==Film_ref,X_scaled.columns.tolist()])
             print("\n Voici les films recommandés : \n")
             display(DF_REF[['title','startYear','averageRating','runtimeMinutes']].iloc[neighbors[1][0]].sort_values(by=['startYear'],ascending=True))  
-
